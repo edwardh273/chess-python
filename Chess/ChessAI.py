@@ -4,8 +4,8 @@ from PieceScores import *
 
 CHECKMATE = 1000
 STALEMATE = 0
-WhiteDepth = 4
-BlackDepth = 4
+WhiteDepth = 5
+BlackDepth = 3
 nextMove = None
 counter = 0
 

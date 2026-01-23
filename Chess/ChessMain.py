@@ -1,6 +1,3 @@
-"""
-This is the main driver file.  It will be responsible for handling user input and displaying the current GameState object.
-"""
 from multiprocessing import Process, Queue
 from ChessGameState import GameState
 from ChessAI import findBestMove, findRandomMove
@@ -11,14 +8,11 @@ WIDTH = HEIGHT = 768
 DIMENSION = 8  # dimensions of chess board = 8x8
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
-IMAGES = {}
-CHESS_DIR = os.path.dirname(__file__)
-colors = []
 
-"""
-The main driver for our code.  This will handle user input and updating the graphics.
-"""
 def main():
+    """
+    The main driver for our code.  This will handle user input and updating the graphics.
+    """
     # set up the game
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
