@@ -1,4 +1,4 @@
-from Move import Move, CastleRights
+from move import Move, CastleRights
 
 """
 This class is responsible for storing all the information about the current

@@ -1,8 +1,8 @@
 from multiprocessing import Process, Queue
-from ChessGameState import GameState
-from ChessAI import findBestMove, findRandomMove
-from Move import Move
-from DisplayFuncs import *
+from chess_game_state import GameState
+from chess_ai import findBestMove, findRandomMove
+from move import Move
+from display_funcs import *
 
 WIDTH = HEIGHT = 768
 DIMENSION = 8  # dimensions of chess board = 8x8
@@ -102,7 +102,7 @@ def main():
             clock.tick(MAX_FPS)
 
 
-        # ChessAI logic
+        # chess_ai logic
         if not isHumanTurn and not gameOver:
             if not AIThinking:
                 AIThinking = True

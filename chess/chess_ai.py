@@ -1,6 +1,6 @@
 import random
 import time
-from PieceScores import *
+from piece_scores import *
 
 CHECKMATE = 1000
 STALEMATE = 0
@@ -37,7 +37,7 @@ def scoreBoard(gs):
 
 
 """
-The function that is called by ChessMain
+The function that is called by chess_main
 """
 def findBestMove(gs, validMoves, returnQueue):
     global nextMove, counter, WhiteDepth, BlackDepth
