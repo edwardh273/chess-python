@@ -28,11 +28,11 @@ def score_board(gs):
             color = square[0]
             piece = square[1]
             if square != "--":
-                piecePositionScore = piece_position_scores[square][row][col]
+                piece_position_score = piece_position_scores[square][row][col]
                 if color == 'w':
-                    score += piece_score[piece] + piecePositionScore * .1
+                    score += piece_score[piece] + piece_position_score * .1
                 elif color == 'b':
-                    score -= (piece_score[piece] + piecePositionScore * .1)
+                    score -= (piece_score[piece] + piece_position_score * .1)
     return score
 
 
