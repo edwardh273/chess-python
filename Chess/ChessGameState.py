@@ -110,7 +110,7 @@ class GameState:
                     if (
                         moves[i].pieceMoved[1] != "K"
                     ):  # move doesn't move king, so must block or capture
-                        if not (moves[i].endCol, moves[i].endRow) in validSquares:
+                        if (moves[i].endCol, moves[i].endRow) not in validSquares:
                             moves.remove(moves[i])
             else:  # double check, king has to move
                 self.getKingMoves(kingRow, kingCol, moves)
