@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue
 from chess_game_state import GameState
-from chess_ai import findBestMove, findRandomMove
+from chess_ai import find_best_move, find_random_move
 from move import Move
 from display_funcs import *
 
@@ -17,29 +17,29 @@ def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
-    loadImages()  # only do this once before the while loop
+    load_images()  # only do this once before the while loop
 
     # setup variables
     running = True
-    moveMade = False
-    gameOver = False
-    AIThinking = False
-    chessAIProcess = None
-    gs = GameState()  # initialize the GameState, whiteToMove = True
-    sqSelected = ()  # no square is selected initially.  Keeps track of last click of user (tuple: (col, row))
-    playerClicks = []  # keep track of player clicks (two tuples: [(4, 7), (4, 5)])
+    move_made = False
+    game_over = False
+    ai_thinking = False
+    chess_ai_process = None
+    gs = GameState()  # initialize the GameState, white_to_move = True
+    sq_selected = ()  # no square is selected initially.  Keeps track of last click of user (tuple: (col, row))
+    player_clicks = []  # keep track of player clicks (two tuples: [(4, 7), (4, 5)])
 
-    whitePlayer = True  # if a human is playing white, then True.  If AI is playing, then false
-    blackPlayer = False  # same as above, but for black.
+    white_player = True  # if a human is playing white, then True.  If AI is playing, then false
+    black_player = False  # same as above, but for black.
 
 
-    validMoves = gs.getValidMoves()
+    valid_moves = gs.get_valid_moves()
     print()
     print("-----White to move-----")
 
     while running:
 
-        isHumanTurn = (gs.whiteToMove and whitePlayer) or (not gs.whiteToMove and blackPlayer)
+        is_human_turn = (gs.white_to_move and white_player) or (not gs.white_to_move and black_player)
 
         for e in p.event.get():
 
@@ -47,95 +47,95 @@ def main():
                 running = False
 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not game_over:
                     # pygame .get_pos is opposite to how you slice the array of the gs.board
                     location = p.mouse.get_pos()  # (col, row): (0,0)==top left;   (col=0, row=7)==bottom left;     (7, 7)==bottom right
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
 
-                    if sqSelected == (col, row):  # the user clicked  the same square twice
-                        sqSelected = ()  # deselect
-                        playerClicks = []  # reset
-                        print("user clicked same square twice, reset playerClicks")
+                    if sq_selected == (col, row):  # the user clicked  the same square twice
+                        sq_selected = ()  # deselect
+                        player_clicks = []  # reset
+                        print("user clicked same square twice, reset player_clicks")
 
                     else:
-                        sqSelected = (col, row)
-                        playerClicks.append(sqSelected)
+                        sq_selected = (col, row)
+                        player_clicks.append(sq_selected)
 
-                    if len(playerClicks) == 2 and isHumanTurn:  # if a user has made their second click, update the board and clear playerClicks
+                    if len(player_clicks) == 2 and is_human_turn:  # if a user has made their second click, update the board and clear player_clicks
                         print("2 clicks: attempt move:")
-                        print(playerClicks)
-                        moveAttempt = Move(playerClicks[0], playerClicks[1], gs.board)  # creates object of class Move(startSq, endSq, board)
-                        for i in range(len(validMoves)):
-                            if moveAttempt == validMoves[i]:  # if move is in all moves, make move, change moveMade variable, clear playerClicks.
-                                gs.makeMove(validMoves[i])
-                                moveMade = True
-                                sqSelected = ()
-                                playerClicks = []
-                        if not moveMade:  # if len(playerClicks == 2) but move not a valid move, clear playerClicks
-                            sqSelected = ()
-                            playerClicks = []
-                            print(playerClicks)
+                        print(player_clicks)
+                        move_attempt = Move(player_clicks[0], player_clicks[1], gs.board)  # creates object of class Move(startSq, endSq, board)
+                        for i in range(len(valid_moves)):
+                            if move_attempt == valid_moves[i]:  # if move is in all moves, make move, change move_made variable, clear player_clicks.
+                                gs.make_move(valid_moves[i])
+                                move_made = True
+                                sq_selected = ()
+                                player_clicks = []
+                        if not move_made:  # if len(player_clicks == 2) but move not a valid move, clear player_clicks
+                            sq_selected = ()
+                            player_clicks = []
+                            print(player_clicks)
 
-            elif e.type == p.KEYDOWN and isHumanTurn:
-                if e.key == p.K_z and len(gs.moveLog) > 0:  # undo when 'z' is pressed.
-                    if whitePlayer and blackPlayer:  # if both human players, undo the last human move
-                        gs.undoMove()
-                        validMoves = gs.getValidMoves()
-                        gameOver = False
-                    if whitePlayer and not blackPlayer:  # if only white human player
-                        gs.undoMove()
-                        gs.undoMove()
-                        validMoves = gs.getValidMoves()
-                        gameOver = False
+            elif e.type == p.KEYDOWN and is_human_turn:
+                if e.key == p.K_z and len(gs.move_log) > 0:  # undo when 'z' is pressed.
+                    if white_player and black_player:  # if both human players, undo the last human move
+                        gs.undo_move()
+                        valid_moves = gs.get_valid_moves()
+                        game_over = False
+                    if white_player and not black_player:  # if only white human player
+                        gs.undo_move()
+                        gs.undo_move()
+                        valid_moves = gs.get_valid_moves()
+                        game_over = False
 
-        if gameOver:  # end of game logic
+        if game_over:  # end of game logic
             clock.tick(5)
-            if gs.inCheck:
-                if gs.whiteToMove:
-                    drawText(screen, "Black wins by checkmate")
+            if gs.in_check:
+                if gs.white_to_move:
+                    draw_text(screen, "Black wins by checkmate")
                 else:
-                    drawText(screen, "White wins by checkmate")
+                    draw_text(screen, "White wins by checkmate")
             else:
-                drawText(screen, "Stalemate")
+                draw_text(screen, "Stalemate")
         else:
             clock.tick(MAX_FPS)
 
 
         # chess_ai logic
-        if not isHumanTurn and not gameOver:
-            if not AIThinking:
-                AIThinking = True
-                returnQueue = Queue()
-                chessAIProcess = Process(target=findBestMove, args=(gs, validMoves, returnQueue))
-                chessAIProcess.start()
+        if not is_human_turn and not game_over:
+            if not ai_thinking:
+                ai_thinking = True
+                return_queue = Queue()
+                chess_ai_process = Process(target=find_best_move, args=(gs, valid_moves, return_queue))
+                chess_ai_process.start()
 
-            if not chessAIProcess.is_alive():  # if done thinking.
-                AIMove = returnQueue.get()
-                if AIMove is not None:
-                    gs.makeMove(AIMove)
-                    moveMade = True
+            if not chess_ai_process.is_alive():  # if done thinking.
+                ai_move = return_queue.get()
+                if ai_move is not None:
+                    gs.make_move(ai_move)
+                    move_made = True
                 else:  # if checkmate inevitable
-                    if validMoves:
-                        AIMove = findRandomMove(validMoves)
-                        gs.makeMove(AIMove)
-                        moveMade = True
-                AIThinking = False
+                    if valid_moves:
+                        ai_move = find_random_move(valid_moves)
+                        gs.make_move(ai_move)
+                        move_made = True
+                ai_thinking = False
 
 
-        if moveMade:  # only calculate new moves after each turn, not each frame.
-            animateMove(gs.moveLog[-1], screen, gs.board, clock)
-            print([move.moveID for move in gs.moveLog])
+        if move_made:  # only calculate new moves after each turn, not each frame.
+            animate_move(gs.move_log[-1], screen, gs.board, clock)
+            print([move.move_id for move in gs.move_log])
             print()
-            print("-----White to move-----") if gs.whiteToMove else print("-----Black to move-----")
-            validMoves = gs.getValidMoves()
-            if not validMoves:  # if no valid moves for next turn then gameOver
-                gameOver = True
-            moveMade = False
+            print("-----White to move-----") if gs.white_to_move else print("-----Black to move-----")
+            valid_moves = gs.get_valid_moves()
+            if not valid_moves:  # if no valid moves for next turn then game_over
+                game_over = True
+            move_made = False
 
 
         p.display.flip()  # updates the full display Surface to the screen.
-        drawGameState(screen, gs, validMoves, sqSelected)
+        draw_game_state(screen, gs, valid_moves, sq_selected)
 
 
 if __name__ == "__main__":

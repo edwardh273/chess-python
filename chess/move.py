@@ -3,26 +3,26 @@ Defines the move class that is passed into the move functions of the GameState
 """
 class Move:
 
-    def __init__(self, startSq, endSq, board, isEnpassantMove=False, isCastleMove=False):  # ((startCol, startRow), (endCol, endRow), board)
-        # position of mouse click is format sqSelected: (col, row)
-        self.startCol = startSq[0]
-        self.startRow = startSq[1]
-        self.endCol = endSq[0]
-        self.endRow = endSq[1]
-        self.pieceMoved = board[self.startRow][self.startCol]
-        self.pieceCaptured = board[self.endRow][self.endCol]
+    def __init__(self, start_sq, end_sq, board, is_enpassant_move=False, is_castle_move=False):  # ((start_col, start_row), (end_col, end_row), board)
+        # position of mouse click is format sq_selected: (col, row)
+        self.start_col = start_sq[0]
+        self.start_row = start_sq[1]
+        self.end_col = end_sq[0]
+        self.end_row = end_sq[1]
+        self.piece_moved = board[self.start_row][self.start_col]
+        self.piece_captured = board[self.end_row][self.end_col]
 
-        self.moveID = f"C{self.startCol:01d}R{self.startRow:01d} -> C{self.endCol:01d}R{self.endRow:01d}"
+        self.move_id = f"C{self.start_col:01d}R{self.start_row:01d} -> C{self.end_col:01d}R{self.end_row:01d}"
 
-        self.isPawnPromotion = (self.pieceMoved == 'wp' and self.endRow == 0) or (self.pieceMoved == 'bp' and self.endRow == 7)
+        self.is_pawn_promotion = (self.piece_moved == 'wp' and self.end_row == 0) or (self.piece_moved == 'bp' and self.end_row == 7)
 
         # enpassant
-        self.isEnpassantMove = isEnpassantMove
-        if self.isEnpassantMove:
-            self.pieceCaptured = 'wp' if self.pieceMoved == 'bp' else 'bp'
+        self.is_enpassant_move = is_enpassant_move
+        if self.is_enpassant_move:
+            self.piece_captured = 'wp' if self.piece_moved == 'bp' else 'bp'
 
         # castle
-        self.isCastleMove = isCastleMove
+        self.is_castle_move = is_castle_move
 
 
     """
@@ -30,7 +30,7 @@ class Move:
     """
     def __eq__(self, other):
         if isinstance(other, Move):  # if object other is class Move, then two moves are equivalent if their IDs are equivalent
-            return self.moveID == other.moveID
+            return self.move_id == other.move_id
         return False
 
 

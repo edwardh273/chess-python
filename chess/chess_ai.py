@@ -4,22 +4,22 @@ from piece_scores import *
 
 CHECKMATE = 1000
 STALEMATE = 0
-WhiteDepth = 5
-BlackDepth = 3
-nextMove = None
+white_depth = 5
+black_depth = 3
+next_move = None
 counter = 0
 
 
 """
 Score board.  +ve score is good for white, -ve score is good for black.
 """
-def scoreBoard(gs):
-    if gs.checkMate:
-        if gs.whiteToMove:
+def score_board(gs):
+    if gs.check_mate:
+        if gs.white_to_move:
             return -CHECKMATE  # black wins
         else:
             return CHECKMATE  # white wins
-    elif gs.staleMate:
+    elif gs.stale_mate:
         return STALEMATE
     score = 0
     for row in range(len(gs.board)):
@@ -28,88 +28,88 @@ def scoreBoard(gs):
             color = square[0]
             piece = square[1]
             if square != "--":
-                piecePositionScore = piecePositionScores[square][row][col]
+                piecePositionScore = piece_position_scores[square][row][col]
                 if color == 'w':
-                    score += pieceScore[piece] + piecePositionScore * .1
+                    score += piece_score[piece] + piecePositionScore * .1
                 elif color == 'b':
-                    score -= (pieceScore[piece] + piecePositionScore * .1)
+                    score -= (piece_score[piece] + piecePositionScore * .1)
     return score
 
 
 """
 The function that is called by chess_main
 """
-def findBestMove(gs, validMoves, returnQueue):
-    global nextMove, counter, WhiteDepth, BlackDepth
-    startTime = time.time()
-    nextMove, counter = None, 0
-    depth = WhiteDepth if gs.whiteToMove else BlackDepth
-    validMoves.sort(reverse=True, key=lambda move: moveSortAlgo(move, gs))
-    bestScore = findMoveNegaMaxAlphaBeta(gs, validMoves, depth, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1, True if gs.whiteToMove else False)  # alpha = current max, so start lowest;  beta = current min so start hightest
-    endTime = time.time()
-    print(f"movesSearched: {counter}     maxScore: {bestScore:.3f}     Time: {endTime - startTime:.2f}")
-    returnQueue.put(nextMove)
+def find_best_move(gs, validMoves, returnQueue):
+    global next_move, counter, white_depth, black_depth
+    start_time = time.time()
+    next_move, counter = None, 0
+    depth = white_depth if gs.white_to_move else black_depth
+    validMoves.sort(reverse=True, key=lambda move: move_sort_algo(move, gs))
+    best_score = find_move_nega_max_alpha_beta(gs, validMoves, depth, -CHECKMATE, CHECKMATE, 1 if gs.white_to_move else -1, True if gs.white_to_move else False)  # alpha = current max, so start lowest;  beta = current min so start hightest
+    end_time = time.time()
+    print(f"movesSearched: {counter}     maxScore: {best_score:.3f}     Time: {end_time - start_time:.2f}")
+    returnQueue.put(next_move)
 
 
 """"
 Function to sort valid moves before they are passed into alpha-beta pruning.
 Likely strongest moves should be searched first for better pruning efficiency
 """
-def moveSortAlgo(move, gameState):
+def move_sort_algo(move, game_state):
     score = 0
 
-    if move.pieceCaptured != "--":
-        score += 10 * pieceScore[move.pieceCaptured[1]] - pieceScore[move.pieceMoved[1]]
+    if move.piece_captured != "--":
+        score += 10 * piece_score[move.piece_captured[1]] - piece_score[move.piece_moved[1]]
 
-    if gameState.squareUnderAttack(move.endRow, move.endCol):
-        if move.pieceCaptured == "--":
-            score -= pieceScore[move.pieceMoved[1]]  # if a capture, already handled
+    if game_state.square_under_attack(move.end_row, move.end_col):
+        if move.piece_captured == "--":
+            score -= piece_score[move.piece_moved[1]]  # if a capture, already handled
 
-    if move.pieceCaptured == "--" and gameState.squareUnderAttack(move.startRow, move.startCol):
-        score += pieceScore[move.pieceMoved[1]] * 0.5
+    if move.piece_captured == "--" and game_state.square_under_attack(move.start_row, move.start_col):
+        score += piece_score[move.piece_moved[1]] * 0.5
 
-    if move.isPawnPromotion:
-        score += pieceScore['Q'] - pieceScore['P']
+    if move.is_pawn_promotion:
+        score += piece_score['Q'] - piece_score['P']
 
-    if move.pieceCaptured == "--":
-        centerDistance = abs(3.5 - move.endRow) + abs(3.5 - move.endCol)
-        score += (7 - centerDistance) * 0.1
+    if move.piece_captured == "--":
+        center_distance = abs(3.5 - move.end_row) + abs(3.5 - move.end_col)
+        score += (7 - center_distance) * 0.1
 
     return score
 
 
 """
-findNegaMaxAlphaBeta.  Always find the maximum score for black and white.
+find_move_nega_max_alpha_beta.  Always find the maximum score for black and white.
 Alpha = Best score the current player has found so far (starts at -1000)
 Beta = Best score the opponent has found so far (starts at +1000)
 When beta < alpha, the maximizing player need not consider further descendants of this node, as opponent player won't let them reach it in real play.
 """
-def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier, whiteAI):
-    global nextMove, counter, WhiteDepth, BlackDepth
+def find_move_nega_max_alpha_beta(gs, valid_moves, depth, alpha, beta, turn_multiplier, white_ai):
+    global next_move, counter, white_depth, black_depth
     counter += 1
     if depth == 0:
-        return turnMultiplier * scoreBoard(gs)
+        return turn_multiplier * score_board(gs)
 
-    maxScore = -CHECKMATE # worst scenario
-    for move in validMoves:
-        gs.makeMove(move)
-        nextMoves = gs.getValidMoves()
-        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier, whiteAI)  # switch the alpha beta perspective.
-        if score > maxScore:
-            maxScore = score
-            if (depth == WhiteDepth and whiteAI) or (depth == BlackDepth and not whiteAI):
-                nextMove = move
-                print(nextMove.moveID, f"{maxScore:.3f}")
-        gs.undoMove()
+    max_score = -CHECKMATE # worst scenario
+    for move in valid_moves:
+        gs.make_move(move)
+        next_moves = gs.get_valid_moves()
+        score = -find_move_nega_max_alpha_beta(gs, next_moves, depth-1, -beta, -alpha, -turn_multiplier, white_ai)  # switch the alpha beta perspective.
+        if score > max_score:
+            max_score = score
+            if (depth == white_depth and white_ai) or (depth == black_depth and not white_ai):
+                next_move = move
+                print(next_move.move_id, f"{max_score:.3f}")
+        gs.undo_move()
 
-        alpha = max(maxScore, alpha)  # pruning
+        alpha = max(max_score, alpha)  # pruning
         if beta <= alpha:  # we can stop searching here because opponent has already found a position limiting us to beta so will never let us reach this position in real play.
             break
-    return maxScore
+    return max_score
 
 
 """
 Returns a random move.
 """
-def findRandomMove(validMoves):
-    return validMoves[random.randint(0, len(validMoves)-1)]
+def find_random_move(valid_moves):
+    return valid_moves[random.randint(0, len(valid_moves)-1)]
