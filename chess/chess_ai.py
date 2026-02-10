@@ -10,10 +10,10 @@ next_move = None
 counter = 0
 
 
-"""
-Score board.  +ve score is good for white, -ve score is good for black.
-"""
 def score_board(gs):
+    """
+    Score board.  +ve score is good for white, -ve score is good for black.
+    """
     if gs.check_mate:
         if gs.white_to_move:
             return -CHECKMATE  # black wins
@@ -36,10 +36,10 @@ def score_board(gs):
     return score
 
 
-"""
-The function that is called by chess_main
-"""
 def find_best_move(gs, validMoves, returnQueue):
+    """
+    The function that is called by chess_main
+    """
     global next_move, counter, white_depth, black_depth
     start_time = time.time()
     next_move, counter = None, 0
@@ -51,11 +51,11 @@ def find_best_move(gs, validMoves, returnQueue):
     returnQueue.put(next_move)
 
 
-""""
-Function to sort valid moves before they are passed into alpha-beta pruning.
-Likely strongest moves should be searched first for better pruning efficiency
-"""
 def move_sort_algo(move, game_state):
+    """
+    Function to sort valid moves before they are passed into alpha-beta pruning.
+    Likely strongest moves should be searched first for better pruning efficiency
+    """
     score = 0
 
     if move.piece_captured != "--":
@@ -78,13 +78,13 @@ def move_sort_algo(move, game_state):
     return score
 
 
-"""
-find_move_nega_max_alpha_beta.  Always find the maximum score for black and white.
-Alpha = Best score the current player has found so far (starts at -1000)
-Beta = Best score the opponent has found so far (starts at +1000)
-When beta < alpha, the maximizing player need not consider further descendants of this node, as opponent player won't let them reach it in real play.
-"""
 def find_move_nega_max_alpha_beta(gs, valid_moves, depth, alpha, beta, turn_multiplier, white_ai):
+    """
+    find_move_nega_max_alpha_beta.  Always find the maximum score for black and white.
+    Alpha = Best score the current player has found so far (starts at -1000)
+    Beta = Best score the opponent has found so far (starts at +1000)
+    When beta < alpha, the maximizing player need not consider further descendants of this node, as opponent player won't let them reach it in real play.
+    """
     global next_move, counter, white_depth, black_depth
     counter += 1
     if depth == 0:
@@ -108,8 +108,8 @@ def find_move_nega_max_alpha_beta(gs, valid_moves, depth, alpha, beta, turn_mult
     return max_score
 
 
-"""
-Returns a random move.
-"""
 def find_random_move(valid_moves):
+    """
+    Returns a random move.
+    """
     return valid_moves[random.randint(0, len(valid_moves)-1)]

@@ -1,7 +1,7 @@
-"""
-Defines the move class that is passed into the move functions of the GameState
-"""
 class Move:
+    """
+    Defines the move class that is passed into the move functions of the GameState
+    """
 
     def __init__(self, start_sq, end_sq, board, is_enpassant_move=False, is_castle_move=False):  # ((start_col, start_row), (end_col, end_row), board)
         # position of mouse click is format sq_selected: (col, row)
@@ -25,10 +25,10 @@ class Move:
         self.is_castle_move = is_castle_move
 
 
-    """
-    Overriding the equals method. Only needed as we are using a class, would not be needed if we used strings, ints etc.
-    """
     def __eq__(self, other):
+        """
+        Overriding the equals method. Only needed as we are using a class, would not be needed if we used strings, ints etc.
+        """
         if isinstance(other, Move):  # if object other is class Move, then two moves are equivalent if their IDs are equivalent
             return self.move_id == other.move_id
         return False

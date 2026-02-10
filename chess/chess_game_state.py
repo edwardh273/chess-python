@@ -1,11 +1,11 @@
 from move import Move, CastleRights
 
-"""
-This class is responsible for storing all the information about the current
-state of a chess game.  It will also be responsible for determining the valid
-moves at the current state.  It will also keep a move log.
-"""
 class GameState:
+    """
+    This class is responsible for storing all the information about the current
+    state of a chess game.  It will also be responsible for determining the valid
+    moves at the current state.  It will also keep a move log.
+    """
     def __init__(self):
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -36,10 +36,10 @@ class GameState:
         self.castle_rights_log = [CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks, self.current_castling_rights.wqs, self.current_castling_rights.bqs)]  # initial log is [(T, T, T, T)]
 
 
-    """
-    Iterates through all pieces of the board, calculating possible moves for every piece of the color of whose turn it is.
-    """
     def get_all_possible_moves(self):
+        """
+        Iterates through all pieces of the board, calculating possible moves for every piece of the color of whose turn it is.
+        """
         moves = []  # ((startCol, startRow), (endCol, endRow), board)
         for r in range(len(self.board)):  # number of rows
             for c in range(len(self.board[r])):  # number of cols in given row
@@ -49,10 +49,10 @@ class GameState:
         return moves
 
 
-    """
-    All moves considering check
-    """
     def get_valid_moves(self):
+        """
+        All moves considering check
+        """
         moves = []
         self.in_check, self.pins, self.checks = self.check_for_pins_and_checks()
 
@@ -94,10 +94,10 @@ class GameState:
         return moves
 
 
-    """
-    Returns if the player is in check, a list of pins, and a list of checks
-    """
     def check_for_pins_and_checks(self):
+        """
+        Returns if the player is in check, a list of pins, and a list of checks
+        """
         pins = []  # square of pinned piece & direction pinned from: (endCol, endRow, dir-col, dir-row)
         checks = []  # squares where enemy is applying a check: (endCol, endRow, dir-col, dir-row)
         in_check = False
@@ -160,10 +160,10 @@ class GameState:
 
         return in_check, pins, checks
 
-    """
-    Undo the last move made
-    """
     def undo_move(self):
+        """
+        Undo the last move made
+        """
         if len(self.move_log) != 0:  # make sure that there is a move to undo
             move = self.move_log.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
@@ -206,10 +206,10 @@ class GameState:
             self.check_mate = False
             self.stale_mate = False
 
-    """
-    Takes a Move as a parameter and executes it.  After making move, changes White to move parameter
-    """
     def make_move(self, move):
+        """
+        Takes a Move as a parameter and executes it.  After making move, changes White to move parameter
+        """
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.move_log.append(move)  # log the move to undo later.
@@ -249,10 +249,10 @@ class GameState:
 
         self.white_to_move = not self.white_to_move  # swap players of the gameState
 
-    """
-    Update the castle rights given a move
-    """
     def update_castle_rights(self, move):
+        """
+        Update the castle rights given a move
+        """
         # check if the king moved or the rock moved
         if move.piece_moved == "wK":
             self.current_castling_rights.wks = False
@@ -287,10 +287,10 @@ class GameState:
                     self.current_castling_rights.bks = False
 
 
-    """
-    Get all castle moves
-    """
     def get_castle_moves(self, r, c, moves):
+        """
+        Get all castle moves
+        """
         if not self.white_to_move and self.black_king_location != (4, 0): return
         if self.white_to_move and self.white_king_location != (4, 7): return
         if not (self.board[r][c - 1] == "--" and self.board[r][c - 2] == "--" and self.board[r][c - 3] == "--") and \
@@ -314,10 +314,10 @@ class GameState:
                 moves.append(Move((c, r), (c-2, r), self.board, is_castle_move=True))
 
 
-    """
-    Determine if the enemy can attack the square r, c.  Returns True, False
-    """
     def square_under_attack(self, r, c):
+        """
+        Determine if the enemy can attack the square r, c.  Returns True, False
+        """
 
         enemy_color = 'b' if self.white_to_move else 'w'
 
@@ -358,10 +358,10 @@ class GameState:
         return False
 
 
-    """
-    Get all pawn moves for the pawn located at row, col and add these moves to the list
-    """
     def get_pawn_moves(self, r, c, moves):
+        """
+        Get all pawn moves for the pawn located at row, col and add these moves to the list
+        """
         piece_pinned = False
         pin_direction = ()
         for i in range(len(self.pins)-1, -1, -1):
@@ -414,10 +414,10 @@ class GameState:
                     if not piece_pinned or pin_direction == (1, 1):
                         moves.append(Move((c, r), (c+1, r+1), self.board, is_enpassant_move=True))
 
-    """
-    Get all Rook moves for the Rook located at row, col and add these moves to the list
-    """
     def get_rook_moves(self, r, c, moves):
+        """
+        Get all Rook moves for the Rook located at row, col and add these moves to the list
+        """
         piece_pinned, pin_direction = False, ()  # set  initial variables
         for i in range(len(self.pins)-1, -1, -1):
             if self.pins[i][0] == c and self.pins[i][1] == r:  # (endCol, endRow, d[0], d[1]).
@@ -445,10 +445,10 @@ class GameState:
                 else:  # off board
                     break
 
-    """
-    Get all Bishop moves for the Bishop located at row, col and add these moves to the list
-    """
     def get_bishop_moves(self, r, c, moves):
+        """
+        Get all Bishop moves for the Bishop located at row, col and add these moves to the list
+        """
         piece_pinned, pin_direction = False, ()
         for i in range(len(self.pins)-1, -1, -1):
             if self.pins[i][0] == c and self.pins[i][1] == r:
@@ -476,17 +476,17 @@ class GameState:
                 else:  # off board
                     break
 
-    """
-    Get all Queen moves for the Queen located at row, col and add these moves to the list
-    """
     def get_queen_moves(self, r, c, moves):
+        """
+        Get all Queen moves for the Queen located at row, col and add these moves to the list
+        """
         self.get_bishop_moves(r, c, moves)
         self.get_rook_moves(r, c, moves)
 
-    """
-    Get all Knight moves for the Knight located at row, col and add these moves to the list
-    """
     def get_knight_moves(self, r, c, moves):
+        """
+        Get all Knight moves for the Knight located at row, col and add these moves to the list
+        """
         piece_pinned = False
         for i in range(len(self.pins)-1, -1, -1):
             if self.pins[i][0] == c and self.pins[i][1] == r:
@@ -504,10 +504,10 @@ class GameState:
                     if end_piece[0] != ally_color:
                         moves.append(Move((c, r), (end_col, end_row), self.board))
 
-    """
-    Get all King moves for the King located at row, col and add these moves to the list
-    """
     def get_king_moves(self, r, c, moves):
+        """
+        Get all King moves for the King located at row, col and add these moves to the list
+        """
         potential_moves = ((-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1))
         ally_color = 'w' if self.white_to_move == True else 'b'
         for m in potential_moves:

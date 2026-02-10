@@ -11,13 +11,13 @@ piece_score = {"K": 0, "Q": 10, "R": 5, "B": 3.25, "N": 3, "p": 1}
 # Less advanced search algorithms below
 
 
-"""
-Finds best move based on material alone.  Written from the perspective of player = white, AI = black.
-Finds the move that produces our opponent's lowest, maximum score.
-Looks 2 moves ahead: the current move, and the return move.
-White best score = CHECKMATE; black best score = -CHECKMATE
-"""
 def find_best_move_no_recursion(gs, valid_moves):
+    """
+    Finds best move based on material alone.  Written from the perspective of player = white, AI = black.
+    Finds the move that produces our opponent's lowest, maximum score.
+    Looks 2 moves ahead: the current move, and the return move.
+    White best score = CHECKMATE; black best score = -CHECKMATE
+    """
     # from the perspective of black, worst score is CHECKMATE, best score is -CHECKMATE
     # player = white
     # AI = black
@@ -54,14 +54,14 @@ def find_best_move_no_recursion(gs, valid_moves):
     return best_move
 
 
-"""
-find_move_min_max.  +ve score is good for white, -ve score is good for black.
-Simple scoring algorithm with recursion to depth.
-Returns score of board at final move and changes the value of global variable next_move.
-Sets next_move equal to the first move of the recursion tree based on the highest board score at depth = DEPTH
-Counter = number of moves evaluated.
-"""
 def find_move_min_max(gs, valid_moves, depth, white_to_move: bool):
+    """
+    find_move_min_max.  +ve score is good for white, -ve score is good for black.
+    Simple scoring algorithm with recursion to depth.
+    Returns score of board at final move and changes the value of global variable next_move.
+    Sets next_move equal to the first move of the recursion tree based on the highest board score at depth = DEPTH
+    Counter = number of moves evaluated.
+    """
     global next_move, counter
     counter += 1
 
@@ -94,11 +94,11 @@ def find_move_min_max(gs, valid_moves, depth, white_to_move: bool):
         return min_score
 
 
-"""
-Same as find_move_min_max, but always tries to maximise the score.
-turn_multiplier = 1 if gs.white_to_move else -1.
-"""
 def find_move_nega_max(gs, valid_moves, depth, turn_multiplier):
+    """
+    Same as find_move_min_max, but always tries to maximise the score.
+    turn_multiplier = 1 if gs.white_to_move else -1.
+    """
     global next_move, counter
     counter += 1
 
@@ -120,10 +120,10 @@ def find_move_nega_max(gs, valid_moves, depth, turn_multiplier):
 
 
 
-"""
-Score the board based on material
-"""
 def score_material(board):
+    """
+    Score the board based on material
+    """
     score = 0
     for row in board:
         for square in row:
