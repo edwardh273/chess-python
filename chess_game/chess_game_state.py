@@ -118,7 +118,7 @@ class GameState:
                     if (
                         moves[i].piece_moved[1] != "K"
                     ):  # move doesn't move king, so must block or capture
-                        if not (moves[i].end_col, moves[i].end_row) in valid_squares:
+                        if (moves[i].end_col, moves[i].end_row) not in valid_squares:
                             moves.remove(moves[i])
             else:  # double check, king has to move
                 self.get_king_moves(king_row, king_col, moves)
