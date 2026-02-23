@@ -1,0 +1,9 @@
+[project]
+name = "chess-python"
+version = "0.1.0"
+description = "Chess engine with alpha-beta pruned AI moves"
+readme = "README.md"
+requires-python = ">=3.12, <3.13"
+dependencies = [
+    "pygame==2.6.1",
+]
