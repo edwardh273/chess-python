@@ -1,7 +1,7 @@
 # Chess AI Algorithm Explained
 
 ## Overview
-This chess engine uses a **Negamax search algorithm with Alpha-Beta pruning** to find the best move. The algorithm searches ahead multiple moves (depth 5 for white, depth 3 for black) and evaluates positions based on material count and piece positioning.
+This chess engine uses a **Negamax search algorithm with Alpha-Beta pruning** to find the best move. The algorithm searches ahead multiple moves and evaluates positions based on material count and piece positioning.
 
 ---
 
