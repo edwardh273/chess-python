@@ -22,31 +22,45 @@ def find_best_move_no_recursion(gs, valid_moves):
     # player = white
     # AI = black
 
-    turn_multiplier = 1 if gs.white_to_move else -1 # default is black to move as the AI when find_best_move called => -1
-    player_lowest_max_score = CHECKMATE # start of worst case scenario for AI: a white checkmated black.
+    turn_multiplier = (
+        1 if gs.white_to_move else -1
+    )  # default is black to move as the AI when find_best_move called => -1
+    player_lowest_max_score = (
+        CHECKMATE  # start of worst case scenario for AI: a white checkmated black.
+    )
     best_move = None
 
     random.shuffle(valid_moves)  # to prevent rook moving side to side
     for ai_move in valid_moves:
         gs.make_move(ai_move)  # the AI makes a move
-        player_moves = gs.get_valid_moves()  # for every move the AI can potentially make, get valid player moves.
+        player_moves = (
+            gs.get_valid_moves()
+        )  # for every move the AI can potentially make, get valid player moves.
 
         # Given an AI move, find the highest scoring responding player move.
-        player_max_score = -CHECKMATE # start of worst case scenario for player (white): black checkmated white
+        player_max_score = (
+            -CHECKMATE
+        )  # start of worst case scenario for player (white): black checkmated white
         for player_move in player_moves:
             gs.make_move(player_move)
             if gs.check_mate:
-                score = -turn_multiplier * CHECKMATE  # now it's black to move.  Score = CHECKMATE, the best possible scenario for white.
+                score = (
+                    -turn_multiplier * CHECKMATE
+                )  # now it's black to move.  Score = CHECKMATE, the best possible scenario for white.
             elif gs.stale_mate:
                 score = STALEMATE
             else:
-                score = -turn_multiplier * score_material(gs.board) # 1 * score_material.
+                score = -turn_multiplier * score_material(
+                    gs.board
+                )  # 1 * score_material.
             if score > player_max_score:
                 player_max_score = score
             gs.undo_move()
 
         # find lowest player_max_score and make the AI move that leads to the player's lowest_max_score.
-        if player_max_score < player_lowest_max_score: # Anything less than +1000 (white checkmate) is better.
+        if (
+            player_max_score < player_lowest_max_score
+        ):  # Anything less than +1000 (white checkmate) is better.
             player_lowest_max_score = player_max_score
             best_move = ai_move
 
@@ -73,10 +87,14 @@ def find_move_min_max(gs, valid_moves, depth, white_to_move: bool):
         for move in valid_moves:
             gs.make_move(move)
             next_moves = gs.get_valid_moves()
-            score = find_move_min_max(gs, next_moves, depth-1, False)  # increments counter by 1
+            score = find_move_min_max(
+                gs, next_moves, depth - 1, False
+            )  # increments counter by 1
             if score > max_score:  # finding highest score
                 max_score = score
-                if depth == DEPTH:  # sets next_move equal to the first move of the recursion tree
+                if (
+                    depth == DEPTH
+                ):  # sets next_move equal to the first move of the recursion tree
                     next_move = move
             gs.undo_move()
         return max_score
@@ -85,7 +103,7 @@ def find_move_min_max(gs, valid_moves, depth, white_to_move: bool):
         for move in valid_moves:
             gs.make_move(move)
             next_moves = gs.get_valid_moves()
-            score = find_move_min_max(gs, next_moves, depth-1, True)
+            score = find_move_min_max(gs, next_moves, depth - 1, True)
             if score < min_score:  # looking for minimum score
                 min_score = score
                 if depth == DEPTH:
@@ -109,7 +127,9 @@ def find_move_nega_max(gs, valid_moves, depth, turn_multiplier):
     for move in valid_moves:
         gs.make_move(move)
         next_moves = gs.get_valid_moves()
-        score = -find_move_nega_max(gs, next_moves, depth-1, -turn_multiplier)  # -ve find_move_nega_max and -turn_multiplier cancel out at turn_multiplier * score_material(gs.board) to produce +ve score
+        score = -find_move_nega_max(
+            gs, next_moves, depth - 1, -turn_multiplier
+        )  # -ve find_move_nega_max and -turn_multiplier cancel out at turn_multiplier * score_material(gs.board) to produce +ve score
         if score > max_score:
             max_score = score
             if depth == DEPTH:
@@ -119,7 +139,6 @@ def find_move_nega_max(gs, valid_moves, depth, turn_multiplier):
     return max_score
 
 
-
 def score_material(board):
     """
     Score the board based on material
@@ -127,8 +146,8 @@ def score_material(board):
     score = 0
     for row in board:
         for square in row:
-            if square[0] == 'w':
+            if square[0] == "w":
                 score += piece_score[square[1]]
-            elif square[0] == 'b':
-                score -=piece_score[square[1]]
+            elif square[0] == "b":
+                score -= piece_score[square[1]]
     return score
