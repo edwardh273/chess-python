@@ -1,6 +1,6 @@
 ### A basic chess engine written by Edward Hicks
 
-Ensure you have created a python virtual env and pip installed the requirements.txt file.
+Ensure you have uv sync (or equivalent) to recreate the python virtual environment.  PyGame 2.6.1 runs on python 3.12 but I have encountered errors on later versions of python.
 
 To play:
 1) In ChessMain.py set the whitePlayer and blackPlayer Booleans.  True = Human player.  False = AI player.  Two humans and two AIs can play against each other.
